@@ -6,15 +6,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="./style.css" />
     <title>Rock paper and scissors</title>
-    <div>Teachable Machine Image Model</div>
-<button type="button" onclick="init()">Enable webcam</button>
-<div id="webcam-container"></div>
-<div id="label-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
   </head>
   <body>
     <section class="game">
+      <div>Teachable Machine Image Model</div>
+      <button type="button" onclick="init()">Enable webcam</button>
+      <div id="webcam-container"></div>
+      <div id="label-container"></div>
       <div class="score">
         <div class="player-score">
           <h2>Player</h2>
@@ -45,9 +46,125 @@
       </div>
     </section>
 
-    <script src="app.js"></script>
-  </body>
-  <script type="text/javascript">
+
+<script type="text/javascript">
+  
+  const game = () => {
+  let pScore = 0;
+  let cScore = 0;
+
+  //Start the Game
+  const startGame = () => {
+    const playBtn = document.querySelector(".intro button");
+    const introScreen = document.querySelector(".intro");
+    const match = document.querySelector(".match");
+
+    playBtn.addEventListener("click", () => {
+      introScreen.classList.add("fadeOut");
+      match.classList.add("fadeIn");
+    });
+  };
+  //Play Match
+  const playMatch = () => {
+    const options = document.querySelectorAll(".options button");
+    const playerHand = document.querySelector(".player-hand");
+    const computerHand = document.querySelector(".computer-hand");
+    const hands = document.querySelectorAll(".hands img");
+
+    hands.forEach(hand => {
+      hand.addEventListener("animationend", function() {
+        this.style.animation = "";
+      });
+    });
+    //Computer Options
+    const computerOptions = ["rock", "paper", "scissors"];
+
+    options.forEach(option => {
+      option.addEventListener("click", function() {
+        //Computer Choice
+        const computerNumber = Math.floor(Math.random() * 3);
+        const computerChoice = computerOptions[computerNumber];
+
+        setTimeout(() => {
+          //Here is where we call compare hands
+          compareHands(this.textContent, computerChoice);
+          //Update Images
+          playerHand.src = `./assets/${this.textContent}.png`;
+          computerHand.src = `./assets/${computerChoice}.png`;
+        }, 2000);
+        //Animation
+        playerHand.style.animation = "shakePlayer 2s ease";
+        computerHand.style.animation = "shakeComputer 2s ease";
+      });
+    });
+  };
+
+  const updateScore = () => {
+    const playerScore = document.querySelector(".player-score p");
+    const computerScore = document.querySelector(".computer-score p");
+    playerScore.textContent = pScore;
+    computerScore.textContent = cScore;
+  };
+
+  const compareHands = (playerChoice, computerChoice) => {
+    //Update Text
+    const winner = document.querySelector(".winner");
+    //Checking for a tie
+    if (playerChoice === computerChoice) {
+      winner.textContent = "It is a tie";
+      return;
+    }
+    //Check for Rock
+    if (playerChoice === "rock") {
+      if (computerChoice === "scissors") {
+        winner.textContent = "Player Wins";
+        pScore++;
+        updateScore();
+        return;
+      } else {
+        winner.textContent = "Computer Wins";
+        cScore++;
+        updateScore();
+        return;
+      }
+    }
+    //Check for Paper
+    if (playerChoice === "paper") {
+      if (computerChoice === "scissors") {
+        winner.textContent = "Computer Wins";
+        cScore++;
+        updateScore();
+        return;
+      } else {
+        winner.textContent = "Player Wins";
+        pScore++;
+        updateScore();
+        return;
+      }
+    }
+    //Check for Scissors
+    if (playerChoice === "scissors") {
+      if (computerChoice === "rock") {
+        winner.textContent = "Computer Wins";
+        cScore++;
+        updateScore();
+        return;
+      } else {
+        winner.textContent = "Player Wins";
+        pScore++;
+        updateScore();
+        return;
+      }
+    }
+  };
+
+  //Is call all the inner function
+  startGame();
+  playMatch();
+};
+
+//start the game function
+game();
 
 
     // More API functions here:
@@ -75,8 +192,6 @@
         webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
         await webcam.setup(); // request access to the webcam
         await webcam.play();
-
-        
         window.requestAnimationFrame(loop);
 
         // append elements to the DOM
@@ -85,6 +200,7 @@
         for (let i = 0; i < maxPredictions; i++) { // and class labels
             labelContainer.appendChild(document.createElement("div"));
         }
+        labelContainer.appendChild(document.createElement("div"));
     }
 
     async function loop() {
@@ -93,24 +209,26 @@
         window.requestAnimationFrame(loop);
     }
 
+    let max_pred=0;
+    let pred_class = "nothing"
     // run the webcam image through the image model
     async function predict() {
-        let max_pred = 0;
-        let pred_class = "nothing";
+        max_pred = 0
         // predict can take in an image, video or canvas html element
         const prediction = await model.predict(webcam.canvas);
-        for (let i = 0; i < maxPredictions; i++) {
+        let i=0
+        for (i = 0; i < maxPredictions; i++) {
             const classPrediction =
-                pred_class + "  : " + prediction[i].probability.toFixed(2);
+                prediction[i].className + "  : " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
             if(max_pred < prediction[i].probability.toFixed(2)) {
               max_pred = Math.max(max_pred,prediction[i].probability.toFixed(2))
               pred_class = prediction[i].className
             }
-            labelContainer.childNodes[i].innerHTML = classPrediction;
-            
             
         }
-    }
+  }
     
   </script>
+  </body>
 </html>
