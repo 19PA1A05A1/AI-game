@@ -26,13 +26,13 @@ section {
   font-size: 25px;
 }
 .player {
-  font-size: 10px;
+  font-size: 50px;
   font-family: monospace;
 
 }
 
 .computer {
-  font-size: 10px;
+  font-size: 50px;
   font-family: monospace;
 
 }
