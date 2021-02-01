@@ -35,8 +35,12 @@
       <div class="match fadeOut">
         <h2 class="winner">Choose an option</h2>
         <div class="hands">
+          <div class = "player">
           <img class="player-hand" src="./assets/rock.png" alt="" />
+          </div>
+          <div class = "computer">
           <img class="computer-hand" src="./assets/rock.png" alt="" />
+          </div>
         </div>
         <div class="options">
           <button class="rock">rock</button>
@@ -208,6 +212,11 @@
     //Update Text
     not_taken = 0
     const winner = document.querySelector(".winner");
+    const player = document.querySelector(".player");
+    const computer = document.querySelector(".computer");
+    player.textContent = playerChoice;
+    computer.textContent = computerChoice;
+    
     //Checking for a tie
     if (playerChoice === computerChoice) {
       winner.textContent = "It is a tie";
