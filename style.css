@@ -25,6 +25,17 @@ section {
   padding: 10px;
   font-size: 25px;
 }
+.player {
+  font-size: 10px;
+  font-family: monospace;
+
+}
+
+.computer {
+  font-size: 10px;
+  font-family: monospace;
+
+}
 
 .intro {
   color: rgb(224, 224, 224);
